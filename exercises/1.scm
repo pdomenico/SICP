@@ -22,3 +22,19 @@
 (define (sqrt x)
   (sqrt-iter 1.0 x))
 
+
+; Exercise 1.8
+(define (betterCubeRootApprox cube rootGuess)
+  (/ (+ 
+      (/ cube (* rootGuess rootGuess))
+      (* rootGuess 2))
+   3))
+
+(define (cubeRootIter x guess)
+  (if (good-enough? guess (betterCubeRootApprox x guess))
+      guess
+      (cubeRootIter x (betterCubeRootApprox x guess))))
+
+(define (cubeRoot x)
+  (cubeRootIter x 1.0))
+
