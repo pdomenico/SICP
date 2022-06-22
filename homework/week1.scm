@@ -120,3 +120,7 @@
 ; If 0 as argument is provided, the function does not cause an error (although y is not defined),
 ; which means that scheme does not check for (= y 0). Otherwise, if x != 0, the function will 
 ; generate an error "test: variable 'y' unbound"
+;
+; It might be advantageous to treat or as a special for for efficiency purposes and
+; it might be advantageous to treat or a a normal procedure when the program relies 
+; on evaluation of every clause (example: there's a function that runs when the clause is evaluated)
