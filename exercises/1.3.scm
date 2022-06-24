@@ -106,4 +106,17 @@
           ((or (= 0 (modulo n 2))
                (= 0 (modulo n 3))) #f)
           ; check 
-          (else (furtherCheck))))          
+          (else (furtherCheck))))
+
+(define (filtered-accumulate combiner null-value a b next f filter)
+    (cond ((> a b) null-value)
+          ((not (filter a)) (combiner null-value 
+                                      (filtered-accumulate combiner null-value (next a) b next f filter)))
+          (else (combiner (f a) (filtered-accumulate combiner null-value (next a) b next f filter)))))
+
+; sum of the squares of the prime numbers
+(define (sumSquaredPrimes a b)
+    (define (next x) (+ x 1))
+    (define (f x) (* x x))
+    (define (filter x) (prime? x))
+    (filtered-accumulate + 0 a b next f filter))
