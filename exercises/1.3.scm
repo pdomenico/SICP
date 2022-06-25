@@ -120,3 +120,48 @@
     (define (f x) (* x x))
     (define (filter x) (prime? x))
     (filtered-accumulate + 0 a b next f filter))
+
+; Exercise 1.40
+(define (fixed-point f first-guess)
+    (define tolerance 1.0000001)
+    (define (goodenough? g1 g2)
+        (if (> g1 g2)
+            (< (/ g1 g2) tolerance)
+            (< (/ g2 g1) tolerance)))
+    
+    (define (try guess)
+        (let ((next (f guess)))
+             (if (goodenough? guess next)
+                 next
+                 (try next))))
+    (try first-guess))
+
+(define (sqrtFixed x)
+    (fixed-point (lambda (y) (average y (/ x y))) 1.0))
+
+(define (average-damp f)
+    (lambda (x) (average x (f x))))
+
+(define (derivative f)
+    (define dx 0.00001)
+    (lambda (x) (/ (- (f (+ x dx)) (f x))
+                   dx)))
+(define (newton-transform g)
+  (lambda (x)
+    (- x (/ (g x) ((derivative g) x)))))
+
+(define (newtons-method g guess)
+  (fixed-point (newton-transform g) guess))
+
+(define (cubic a b c)
+    (lambda (x) (+ (* x x x)
+                   (* a x x)
+                   (* b x)
+                   c)))
+
+
+; Exercise 1.41
+(define (double f)
+    (lambda (x) (f (f x))))
+
+(define (inc x) (+ x 1))
