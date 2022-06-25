@@ -165,3 +165,35 @@
     (lambda (x) (f (f x))))
 
 (define (inc x) (+ x 1))
+
+; Exercise 1.42
+(define (compose f g)
+    (lambda (x) (f (g x))))
+
+; Exercise 1.43
+(define (repeated f n)
+    (if (= n 1)
+        f
+        (lambda (x) ((repeated f (- n 1)) (f x)))))
+
+; Exercise 1.46
+(define (iterative-improvement goodenough? improve)
+    (define (iter guess)
+        (let ((next-guess (improve guess)))
+             (if (goodenough? guess next-guess)
+                 next-guess
+                 (iter next-guess))))
+    (lambda (guess) (iter guess)))
+
+(define (sqrt-improve x)
+    (define tolerance 1.001)
+    (define (goodenough? g1 g2)
+        (if (> g1 g2)
+            (< (/ g1 g2) tolerance)
+            (< (/ g2 g1) tolerance)))
+    
+    (define (improve guess)
+        (average guess (/ x guess)))
+    
+    ((iterative-improvement goodenough? improve) 1.0))
+
