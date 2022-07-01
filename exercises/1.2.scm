@@ -37,17 +37,36 @@
 (define (even? n) (= 0 (remainder n 2)))
 (define (square n) (* n n))
 
-; Recurrent version of fast-exp
-(define (fast-expt b n)
+; Recursive version of fast-exp
+(define (recursive-fast-expt b n)
   (cond ((= n 0) 1)
         ((even? n) (square (fast-expt b (/ n 2))))
         (else (* b (fast-expt b (- n 1))))))
 
 ; Iterative version of fast-exp
 (define (iter-fast-expt b n)
-    (define (iter a b exponent)
-        (cond ((= exponent 0) 1)
-              ((= exponent 1) (* a b))
-              ((even? exponent) (iter a (square b) (/ exponent 2)))
-              (else (iter (* a b) b (- exponent 1)))))
+    (define (iter a b n)
+        (cond ((= n 0) 1)
+              ((= n 1) (* a b))
+              ((even? n) (iter a (square b) (/ n 2)))
+              (else (iter (* a b) b (- n 1)))))
     (iter 1 b n))
+
+
+
+; Exercise 1.17
+(define (double x) (* x 2))
+(define (halve x) (/ x 2))
+
+(define (times a b)
+    (cond ((= b 1) a)
+          ((even? b) (double (times a (halve b))))
+          (else (+ a (times a (- b 1))))))
+
+; Exercise 1.18
+(define (iter-times a b)
+    (define (iter a s b)
+        (cond ((= b 1) (+ a s))
+              ((even? b) (iter (double a) s (halve b)))
+              (else (iter a (+ s a) (- b 1)))))
+    (iter a 0 b))
