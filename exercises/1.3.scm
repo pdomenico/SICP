@@ -121,7 +121,7 @@
     (define (filter x) (prime? x))
     (filtered-accumulate + 0 a b next f filter))
 
-; Exercise 1.40
+; Exercise 1.35
 (define (fixed-point f first-guess)
     (define tolerance 1.0000001)
     (define (goodenough? g1 g2)
@@ -135,6 +135,34 @@
                  next
                  (try next))))
     (try first-guess))
+
+(define (golden-ratio-f x)
+    (+ 1 (/ 1 x)))
+
+
+; Exercise 1.37
+(define (cont-frac n d k)
+    (define (helper count)
+        (if (= count k)
+            (/ (n count) (d count))
+            (/ (n count)
+               (+ (d count)
+                  (helper (+ 1 count))))))
+    (helper 1))
+; k = 11 is enough to have 4 digits precision on 1/(golden ratio)
+
+
+; Exercise 1.38
+(define (n i) 1.0)
+(define (d i)
+    (if (= 2 (modulo i 3))
+        (* 2 (/ (+ 1 i) 3 ))
+        1))
+
+; to approximate e-2, run (cont-frac n d 10)
+
+
+; Exercise 1.40
 
 (define (sqrtFixed x)
     (fixed-point (lambda (y) (average y (/ x y))) 1.0))
