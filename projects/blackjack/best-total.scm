@@ -16,21 +16,15 @@
               ((equal? 'a (first card)) 11)))
 
 (define (best-total hand)
-    (define (count-normal hand total)
-        (cond ((equal? hand '()) total)
+    (define (evaluate-score total aces)
+        (cond ((= 0 aces) total)
+              ((> total 21) (evaluate-score (- total 10) (- aces 1)))
+              (else total)))
+
+    (define (count hand total aces)
+        (cond ((equal? hand '()) (evaluate-score total aces))
               ((equal? (card-to-n (first hand)) 11)
-               (count-ace (bf hand) (+ 11 total)))
-              (else (count-normal (bf hand)
-                                  (+ (card-to-n (first hand)) total)))))
-    
-    (define (count-ace hand total)
-        (define (evaluate total)
-            (if (> total 21)
-                (- total 10)
-                total))
-
-        (if (equal? hand '())
-            (evaluate total)
-            (count-ace (bf hand) (+ (card-to-n (first hand)) total))))
-
-    (count-normal hand 0))
+               (count (bf hand) (+ 11 total) (+ 1 aces)))
+              (else (count (bf hand)
+                           (+ (card-to-n (first hand)) total) aces))))
+    (count hand 0 0))
