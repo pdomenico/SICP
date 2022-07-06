@@ -1,3 +1,5 @@
+(load "best-total")
+
 (define (twenty-one strategy)
   (define (play-dealer customer-hand dealer-hand-so-far rest-of-deck)
     (cond ((> (best-total dealer-hand-so-far) 21) 1)
