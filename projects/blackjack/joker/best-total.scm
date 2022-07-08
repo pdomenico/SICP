@@ -15,7 +15,8 @@
               ((equal? 'J (first card)) 10)
               ((equal? 'K (first card)) 10)
               ((equal? 'Q (first card)) 10)
-              ((equal? 'A (first card)) 11)))
+              ((equal? 'A (first card)) 11)
+              ((equal? 'Y (first card)) 11)))
 
 (define (best-total hand)
     (define (adjust-jokers total aces jokers)

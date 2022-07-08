@@ -9,4 +9,4 @@
 
 
 (define (new-valentine hand dealer-card)
-    ((suit-strategy 'h (stop-at 19) (stop-at 17)) hand dealer-card))
+    ((suit-strategy 'H (stop-at 19) (stop-at 17)) hand dealer-card))
