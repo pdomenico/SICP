@@ -180,7 +180,6 @@
 
 ; Exercise 2.21
 (define (new-for-each f items)
-    (f (car items))
     (if (null? (cdr items))
-        #t
-        (new-for-each f (cdr items))))
+        (f (car items))
+        (and (f (car items)) (new-for-each f (cdr items)))))
