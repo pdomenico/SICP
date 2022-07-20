@@ -30,3 +30,16 @@
                               (substitute2 (cdr l) old-words new-words))
                       (append (list (select-from-list new-words index))
                               (substitute2 (cdr l) old-words new-words)))))))
+
+
+(define (cxr-function command)
+    (define (second x) (first (bf x)))
+
+    (define (butsecond x) (word (first x) (bf (bf x))))
+
+    (define (helper f command)
+        (cond ((equal? command 'cr) f)
+              ((equal? 'a (second command)) (helper (lambda (x) (car (f x))) (butsecond command)))
+              ((equal? 'd (second command)) (helper (lambda (x) (cdr (f x))) (butsecond command)))))
+    
+    (helper (lambda (x) x) command))
