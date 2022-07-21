@@ -38,8 +38,10 @@
     (define (butsecond x) (word (first x) (bf (bf x))))
 
     (define (helper f command)
-        (cond ((equal? command 'cr) f)
-              ((equal? 'a (second command)) (helper (lambda (x) (car (f x))) (butsecond command)))
-              ((equal? 'd (second command)) (helper (lambda (x) (cdr (f x))) (butsecond command)))))
+        (cond ((equal? 'cr command) f)
+              ((equal? 'a (second command))
+               (helper (lambda (x) (car (f x))) (butsecond command)))
+              ((equal? 'd (second command))
+               (helper (lambda (x) (cdr (f x))) (butsecond command)))))
     
     (helper (lambda (x) x) command))
