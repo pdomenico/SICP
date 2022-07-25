@@ -183,3 +183,77 @@
     (if (null? (cdr items))
         (f (car items))
         (and (f (car items)) (new-for-each f (cdr items)))))
+
+; Exercise 2.29
+
+(define (make-mobile left right)
+  (list left right))
+
+(define (make-branch length structure)
+  (list length structure))
+
+(define left-branch car)
+(define right-branch cadr)
+(define branch-length car)
+(define branch-structure cadr)
+
+(define (total-weight mobile)
+    (let ((ls (branch-structure (left-branch mobile)))
+          (rs (branch-structure (right-branch mobile))))
+        (cond ((and (number? ls) (number? rs)) (+ ls rs))
+              ((number? rs) (+ rs (total-weight ls)))
+              ((number? ls) (+ ls (total-weight rs)))
+              (else (+ (total-weight rs) (total-weight ls))))))
+
+(define (total-length branch)
+    (if (number? (branch-structure branch))
+        (branch-length branch)
+        (+ (branch-length branch)
+           (total-length (left-branch (branch-structure branch)))
+           (total-length (right-branch (branch-structure branch))))))
+
+(define (balanced? mobile)
+    (let ((right-weight (if (number? (branch-structure (right-branch mobile)))
+                            (branch-structure (right-branch mobile))
+                            (total-weight (branch-structure (right-branch mobile)))))
+          (left-weight (if (number? (branch-structure (left-branch mobile)))
+                            (branch-structure (left-branch mobile))
+                            (total-weight (branch-structure (left-branch mobile))))))
+        (= (* right-weight (total-length (right-branch mobile)))
+           (* left-weight (total-length (left-branch mobile))))))
+
+; Suppose we change the representation of mobiles so that the constructors are
+(define (make-mobile left right)
+  (cons left right))
+(define (make-branch length structure)
+  (cons length structure))
+
+; New selectors:
+(define left-branch car)
+(define right-branch cdr)
+(define branch-length car)
+(define branch-structure cdr)
+
+
+
+; Exercise 2.30
+
+(define make-tree cons)
+(define datum car)
+(define children cdr)
+
+(define (square-tree tree)
+    (define (helper tree squared-children)
+        (if (empty? (children tree))
+            (make-tree (square (datum tree)) squared-children)
+            (helper (make-tree (datum tree) (cdr (children tree)))
+                    (append squared-children (list (square-tree (car (children tree))))))))
+    (helper tree '()))
+
+; Square tree with higher-order procedures
+(define (square-tree-ho tree)
+    (make-tree (square (datum tree)) (map square-tree (children tree))))
+
+; Exercise 2.31
+(define (tree-map f tree)
+    (make-tree (f (datum tree)) (map f (children tree))))
