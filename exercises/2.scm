@@ -257,3 +257,62 @@
 ; Exercise 2.31
 (define (tree-map f tree)
     (make-tree (f (datum tree)) (map f (children tree))))
+
+; Exercise 2.36
+(define (accumulate op init items)
+    (if (null? items)
+        init
+        (op (car items) (accumulate op init (cdr items)))))
+
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+      '()
+      (cons (accumulate op init (map car seqs))
+            (accumulate-n op init (map cdr seqs)))))
+
+; Exercise 2.37
+(define (matrix-*-vector m v)
+    (map (lambda (row)
+            (accumulate + 0 (accumulate-n * 1 (list row v))))
+         m))
+
+(define (transpose mat)
+    (accumulate-n (lambda (x y) 
+                    (if (null? y)
+                        (list x)
+                        (append (list x) y)))
+                  '() mat))
+
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map (lambda (m-row)
+            (map (lambda (n-column)
+                    (accumulate + 0 (accumulate-n * 1 (list m-row n-column))))
+                 cols))
+         m)))
+
+; Let's try
+(define (random-list length)
+    (define (helper items count)
+        (if (= count 0)
+            items
+            (helper (append (list (random 100)) items) (- count 1))))
+    (helper '() length))
+
+(define (random-matrix length height)
+    (define (helper rows count)
+        (if (= count 0)
+            rows
+            (helper (append (list (random-list length)) rows) (- count 1))))
+    (helper '() height))
+
+(define (print-matrix mat)
+    (define (print-row r)
+        (display r) (newline))
+
+    (define (print-row-with-recursion mat)
+        (display (car mat)) (newline) (print-matrix (cdr mat)))
+
+    (if (null? (cdr mat))
+        (print-row (car mat))
+        (print-row-with-recursion mat)))
