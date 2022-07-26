@@ -291,7 +291,7 @@
                  cols))
          m)))
 
-; Let's try
+; Some additional helper functions
 (define (random-list length)
     (define (helper items count)
         (if (= count 0)
