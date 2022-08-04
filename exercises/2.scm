@@ -316,3 +316,15 @@
     (if (null? (cdr mat))
         (print-row (car mat))
         (print-row-with-recursion mat)))
+
+; Exercise 2.62
+(define (union-set set1 set2)
+    (cond ((and (null? set1) (null? set2)) '())
+          ((null? set1) (cons (car set2) (union-set set1 (cdr set2))))
+          ((null? set2) (cons (car set1) (union-set (cdr set1) set2)))
+          ((< (car set1) (car set2))
+           (cons (car set1) (union-set (cdr set1) set2)))
+          ((< (car set2) (car set1))
+           (cons (car set2) (union-set set1 (cdr set2))))
+          (else (cons (car set1) (union-set (cdr set1) (cdr set2))))))
+
