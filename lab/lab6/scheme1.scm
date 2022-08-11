@@ -63,11 +63,14 @@
 	     (eval-1 (caddr exp))
 	     (eval-1 (cadddr exp))))
     ((and-exp? exp)
-     (if (eval-1 (cadr exp))
-         (if (= 2 (length exp))
-             #t
-             (eval-1 (append (list (car exp)) (cddr exp))))
-         #f))
+     (cond ((and (= 2 (length exp)) (eval-1 (cadr exp))) #t)
+	       ((eval-1 (cadr exp)) (eval-1 (append (list (car exp)) (cddr exp))))
+		   (else #f)))
+	((let-exp? exp)
+	 (let ((form-par (map car (cadr exp)))
+	       (args (map (lambda (x) (eval-1 (car (cdr x)))) (cadr exp)))
+		   (body (caddr exp)))
+	 	(apply-1 (list 'lambda form-par body) args)))
 	((lambda-exp? exp) exp)
 	((pair? exp) (apply-1 (eval-1 (car exp))      ; eval the operator
 			      (map eval-1 (cdr exp))))
@@ -114,6 +117,7 @@
 (define if-exp? (exp-checker 'if))
 (define lambda-exp? (exp-checker 'lambda))
 (define and-exp? (exp-checker 'and))
+(define let-exp? (exp-checker 'let))
 
 
 ;; SUBSTITUTE substitutes actual arguments for *free* references to the

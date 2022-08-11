@@ -328,3 +328,36 @@
            (cons (car set2) (union-set set1 (cdr set2))))
           (else (cons (car set1) (union-set (cdr set1) (cdr set2))))))
 
+; Exercise 2.75
+(define (make-from-mag-ang mag ang)
+    (lambda (op)
+        (cond ((eq? 'real-part op) (* mag (cos ang)))
+              ((eq? 'imag-part op) (* mag (sin ang)))
+              ((eq? 'magnitude op) mag)
+              ((eq? 'angle op) ang)
+              (else (error "Unknown op -- MAKE-REAL-FROM-MAG-ANG" op)))))
+
+; Exercise 2.79
+(define (eq-rat x y)
+    (and (= (numer x) (numer y)) (= (denom x) (denom y))))
+(define (eq-complex x y)
+    (and (= (real-part x) (real-part y)) (= (imag-part x) (imag-part y))))
+(put 'eq? '(scheme-number scheme-number) =)
+(put 'eq? '(rational rational) eq-rat)
+(put 'eq? '(complex complex) eq-complex)
+
+; Exercise 2.80
+(put '=zero? '(scheme-number) (lambda (x) (= x 0)))
+(put '=zero? '(rational) (lambda (x) (= 0 (numer x))))
+(put '=zero? '(complex) (lambda (x) (and (= 0 (real-part x))
+                                         (= 0 (imag-part x))))
+
+; Exercise 2.83
+(define (scheme-number->rational x)
+    (make-rat x 0))
+(define (rational->complex x)
+    (make-from-real-imag x 0))
+(define (raise x)
+    (cond ((number? x) (scheme-number->rational x))
+          ((eq? 'rational (type-tag x)) (rational->complex x))
+          ((eq? 'complex (type-tag x)) x)))
