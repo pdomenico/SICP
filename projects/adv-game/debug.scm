@@ -1,4 +1,4 @@
-;; ADV.SCM
+; ADV.SCM
 ;; This file contains the definitions for the objects in the adventure
 ;; game and some utility procedures.
 
@@ -159,14 +159,13 @@
         (begin (insert! ticket-counter new-car tickets-table) 
                (set! ticket-counter (+ 1 ticket-counter))
                (ask owner 'lose new-car)
-               (ask self 'appear ticket)
                (ask owner 'take ticket)))))
   (method (unpark ticket)
     (if (not (eq? (ask ticket 'name) 'ticket)) (error "Wrong thing provided as ticket"))
     (let ((car-to-unpark (lookup (ask ticket 'number) tickets-table))
-          (ticket-n (ask ticket 'number)))
+          (ticket-number (ask ticket 'number)))
       (if (not car-to-unpark) (error "There is no car with ticket N" ticket-n))
-      (let ((owner (ask ticket 'possessor)))
+      (let ((owner (ask car-to-unpark 'possessor)))
         (begin (ask owner 'lose ticket)
                (ask owner 'take car-to-unpark)
                (insert! ticket-n #f tickets-table))))))
@@ -181,99 +180,3 @@
 (ask g 'appear mac)
 (ask dom 'take mac)
 (ask g 'park mac)
-
-(define t (car (ask dom 'possessions)))
-(ask g 'unpark t)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Implementation of thieves for part two
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(define *foods* '(pizza potstickers coffee))
-
-(define (edible? thing)
-  (member? (ask thing 'name) *foods*))
-
-(define-class (thief name initial-place)
-  (parent (person name initial-place))
-  (instance-vars
-   (behavior 'steal))
-  (method (type) 'thief)
-
-  (method (notice person)
-    (if (eq? behavior 'run)
-	(ask self 'go (pick-random (ask (usual 'place) 'exits)))
-	(let ((food-things
-	       (filter (lambda (thing)
-			 (and (edible? thing)
-			      (not (eq? (ask thing 'possessor) self))))
-		       (ask (usual 'place) 'things))))
-	  (if (not (null? food-things))
-	      (begin
-	       (ask self 'take (car food-things))
-	       (set! behavior 'run)
-	       (ask self 'notice person)) )))) )
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Utility procedures
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; this next procedure is useful for moving around
-
-(define (move-loop who)
-  (newline)
-  (print (ask who 'exits))
-  (display "?  > ")
-  (let ((dir (read)))
-    (if (equal? dir 'stop)
-	(newline)
-	(begin (print (ask who 'go dir))
-	       (move-loop who)))))
-
-
-;; One-way paths connect individual places.
-
-(define (can-go from direction to)
-  (ask from 'new-neighbor direction to))
-
-
-(define (announce-take name thing)
-  (newline)
-  (display name)
-  (display " took ")
-  (display (ask thing 'name))
-  (newline))
-
-(define (announce-move name old-place new-place)
-  (newline)
-  (newline)
-  (display name)
-  (display " moved from ")
-  (display (ask old-place 'name))
-  (display " to ")
-  (display (ask new-place 'name))
-  (newline))
-
-(define (have-fit p)
-  (newline)
-  (display "Yaaah! ")
-  (display (ask p 'name))
-  (display " is upset!")
-  (newline))
-
-
-(define (pick-random set)
-  (nth (random (length set)) set))
-
-(define (delete thing stuff)
-  (cond ((null? stuff) '())
-	((eq? thing (car stuff)) (cdr stuff))
-	(else (cons (car stuff) (delete thing (cdr stuff)))) ))
-
-(define (person? obj)
-  (and (procedure? obj)
-       (member? (ask obj 'type) '(person police thief))))
-
-(define (thing? obj)
-  (and (procedure? obj)
-       (eq? (ask obj 'type) 'thing)))
