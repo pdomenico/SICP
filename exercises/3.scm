@@ -36,3 +36,67 @@
                      (if (= 0 (modulo glob 2))
                          0
                          x)))))
+
+; Exercise 3.21
+(define (make-queue) (cons '() '()))
+(define front-ptr car)
+(define rear-ptr cdr)
+(define set-front-ptr! set-car!)
+(define set-rear-ptr! set-cdr!)
+(define (empty-queue? queue) (null? (front-ptr queue)))
+
+(define (front-queue queue)
+  (if (empty-queue? queue)
+      (error "FRONT called with an empty queue" queue)
+      (car (front-ptr queue))))
+
+(define (insert-queue! queue item)
+  (let ((new-pair (cons item '())))
+    (cond ((empty-queue? queue)
+           (set-front-ptr! queue new-pair)
+           (set-rear-ptr! queue new-pair)
+           queue)
+          (else
+           (set-cdr! (rear-ptr queue) new-pair)
+           (set-rear-ptr! queue new-pair)
+           queue))))
+
+(define (delete-queue! queue)
+  (cond ((empty-queue? queue)
+         (error "DELETE! called with an empty queue" queue))
+        (else
+         (set-front-ptr! queue (cdr (front-ptr queue)))
+         queue))) 
+
+(define (print-queue queue) (front-ptr queue))
+
+; Exercise 3.22
+(define (make-queue)
+  (let ((front-ptr '()) (rear-ptr '()))
+    (define (empty-queue?) (null? front-ptr))
+    (define (set-front-ptr! ptr) (set! front-ptr ptr))
+    (define (set-rear-ptr! ptr) (set! rear-ptr ptr))
+    (define (insert element)
+      (let ((new-pair (cons element '())))
+        (if (empty-queue?)
+            (begin (set-front-ptr! new-pair) (set-rear-ptr! new-pair))
+            (begin (set-cdr! rear-ptr new-pair) (set-rear-ptr! new-pair)))))
+    (define (delete)
+      (if (empty-queue?) (error "Called with empty queue!"))
+      (set-front-ptr! (cdr front-ptr)))
+    (define (dispatch m)
+      (cond ((equal? 'insert m) insert)
+            ((equal? 'delete m) (delete))
+            ((equal? 'front m) (car front-ptr))
+            ((equal? 'rear m) (car rear-ptr))
+            ((equal? 'print m) front-ptr)
+            (else (error "Message not valid!"))))
+    dispatch))
+  
+(define (add-item q item)
+  ((q 'insert) item))
+
+(define (delete-item q) (q 'delete))
+(define (print-queue q) (q 'print))
+(define (front-queue q) (q 'front))
+(define (rear-queue q) (q 'rear))
