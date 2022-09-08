@@ -111,10 +111,9 @@
       (define (insert-table table keys value)
         (let ((result (assoc (car keys) (cdr table))))
           (if result
-              (begin (set-cdr! result '())
-                     (if (> 1 (length (cdr keys)))
+              (if (> (length (cdr keys)) 1)
                          (insert-table result (cdr keys) value)
-                         (insert-value result (cadr keys) value)))
+                         (insert-value result (cadr keys) value))
               (let ((newtable (cons (car keys) '())))
                 (begin (set-cdr! table (cons newtable (cdr table)))
                        (if (> (length (cdr keys)) 1)
@@ -149,4 +148,4 @@
 (define (get table . keys)
   ((table 'get) keys))
 (define (get-table table)
-  (table 'table))
+  (table 'table)) 
