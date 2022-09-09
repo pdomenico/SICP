@@ -1,0 +1,18 @@
+(define (vector-append v1 v2)
+  (let ((newvec (make-vector (+ (vector-length v1) (vector-length v2)))))
+    (define (loop ni oi nv ov)
+      (if (= oi (- (vector-length ov) 1))
+	  (vector-set! nv ni (vector-ref ov oi))
+	  (begin (vector-set! nv ni (vector-ref ov oi))
+		 (loop (+ 1 ni) (+ 1 oi) nv ov))))
+    (begin (loop 0 0 newvec v1)
+	   (loop (vector-length v1) 0 newvec v2)
+	   newvec)))
+
+
+(define (vector-filter f v)
+  (define (loop i lst)
+    (if (= 0 i)
+        (cons (f (vector-ref v i)) lst)
+	(loop (- i 1) (cons (f (vector-ref v i)) lst))))
+  (list->vector (loop (- (vector-length v) 1) '())))
