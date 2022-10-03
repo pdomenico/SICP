@@ -9,10 +9,39 @@
 	   (loop (vector-length v1) 0 newvec v2)
 	   newvec)))
 
-
 (define (vector-filter f v)
   (define (loop i lst)
-    (if (= 0 i)
-        (cons (f (vector-ref v i)) lst)
-	(loop (- i 1) (cons (f (vector-ref v i)) lst))))
-  (list->vector (loop (- (vector-length v) 1) '())))
+    (if (< i 0)
+        lst
+	(let ((e (vector-ref v i)))
+	  (if (f e)
+	      (loop (- i 1) (cons e lst))
+	      (loop (- i 1) lst)))))
+ (list->vector (loop (- (vector-length v) 1) '())))
+
+(define (bubble-sort! v)
+  (define (loop i)
+    (define (swap-loop j swapped)
+      (cond ((= i j) swapped)
+	    ((> (vector-ref v j) (vector-ref v (+ 1 j)))
+	     (let ((temp (vector-ref v j)))
+	       (begin (vector-set! v j (vector-ref v (+ 1 j)))
+		      (vector-set! v (+ 1 j) temp)
+		      (swap-loop (+ 1 j) #t))))
+	    (else (swap-loop (+ 1 j) swapped))))
+    (let ((finished (not (swap-loop 0 #f))))
+      (cond (finished v)
+	    ((= i 0) v)
+	    (else (loop (- i 1))))))
+  (loop (- (vector-length v) 1)))
+
+
+; Create vector of any dimension with random numbers from 0 to 100
+(define (random-vec size)
+  (define (loop vec i)
+    (if (= i (vector-length vec))
+        vec
+	(begin (vector-set! vec i (random 100))
+	       (loop vec (+ 1 i)))))
+  (let ((vec (make-vector size)))
+    (loop vec 0)))

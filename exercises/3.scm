@@ -149,3 +149,47 @@
   ((table 'get) keys))
 (define (get-table table)
   (table 'table)) 
+
+
+; Exercise 3.50
+(define ones (cons 1 (delay ones)))
+
+(define stream-car car)
+(define (stream-cdr stream)
+  (force (cdr stream)))
+  
+
+(define (print-stream stream n)
+  (if (= n 1)
+      (begin (display (stream-car stream))
+             (newline)) 
+      (begin (display (stream-car stream))
+             (newline)
+             (print-stream (stream-cdr stream) (- n 1)))))
+        
+(define (stream-map f s1 s2)
+  (cons (f (stream-car s1) (stream-car s2))
+        (delay (stream-map f (stream-cdr s1) (stream-cdr s2)))))
+
+(define natural-numbers
+  (cons 1 (delay (stream-map + ones natural-numbers))))
+
+(define (stream-map proc . argstreams)
+  (if (null? (car argstreams))
+      the-empty-stream
+      (cons
+       (apply proc (map stream-car argstreams))
+       (delay (apply stream-map
+                     (cons proc (map stream-cdr argstreams)))))))
+; Exercise 3.54
+(define (mul-streams s1 s2)
+  (stream-map * s1 s2))
+
+(define (sum-streams s1 s2)
+  (stream-map + s1 s2))
+
+(define factorials (cons 1 (delay (mul-streams (stream-cdr natural-numbers) factorials))))
+
+; Exercise 3.55
+(define partial-sums
+  (cons 1 (delay (sum-streams (stream-cdr natural-numbers) partial-sums))))
