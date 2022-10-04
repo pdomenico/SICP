@@ -428,6 +428,7 @@
 (define (mc-eval exp env)
   (cond ((self-evaluating? exp) exp)
     ((let? exp) (mc-eval (let->combination exp) env))
+    ((let*? exp) (mc-eval (let*->nested-lets exp) env))
 	((variable? exp) (lookup-variable-value exp env))
 	((quoted? exp) (text-of-quotation exp))
 	((assignment? exp) (eval-assignment exp env))
@@ -445,3 +446,53 @@
 		   (list-of-values (operands exp) env)))
 	(else
 	 (error "Unknown expression type -- EVAL" exp))))
+
+; Exercise 4.7
+(define (let*->nested-lets exp)
+  (let ((assignments (cadr exp)) (body (caddr exp)))
+    (if (= 1 (length assignments))
+        (list 'let assignments body)
+        (list 'let (list (car assignments)) (list 'let* (cdr assignments) body)))))
+
+(define (let*? exp) (tagged-list? exp 'let*))
+
+; Exercise 4.11
+(define (make-frame variables values)
+  (if (or (null? variables) (null? values))
+      '()
+      (cons (cons (car variables) (car values))
+            (make-frame (cdr variables) (cdr values)))))
+
+(define (frame-variables frame)
+  (if (null? frame)
+      '()
+      (cons (car (car frame))
+            (frame-variables (cdr frame)))))
+
+(define (frame-values frame)
+  (if (null? frame)
+      '()
+      (cons (cdr (car frame))
+            (frame-values (cdr frame)))))
+
+(define (add-binding-to-frame! var val frame)
+  (set! frame (cons (cons var val) frame)))
+
+(define (lookup-variable-value var env)
+  (define (frame-lookup var frame)
+    (cond ((null? frame) #f)
+          ((equal? (caar frame) var) (cdar frame))
+          (else (frame-lookup var (cdr frame))
+  (if (null? env)
+      (error "Unbound variable")
+      (let ((result (frame-lookup var (car env))))
+        (if result
+            result
+            (lookup-variable-value var (cdr env)))))))))
+
+; Exercise 4.13
+(define (make-unbound! var env)
+  (define (remove-from-frame var frame)
+    (cond ((null? frame) frame)
+          ((equal? (caar frame) var) (cdr frame))
+          (else (cons (car frame) (remove-from-frame var frame))))))
