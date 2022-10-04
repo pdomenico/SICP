@@ -495,4 +495,7 @@
   (define (remove-from-frame var frame)
     (cond ((null? frame) frame)
           ((equal? (caar frame) var) (cdr frame))
-          (else (cons (car frame) (remove-from-frame var frame))))))
+          (else (cons (car frame) (remove-from-frame var frame)))))
+  (map (lambda (frame)
+         (set! frame (remove-from-frame var frame)))
+       env)))

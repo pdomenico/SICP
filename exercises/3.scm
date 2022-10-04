@@ -193,3 +193,10 @@
 ; Exercise 3.55
 (define partial-sums
   (cons 1 (delay (sum-streams (stream-cdr natural-numbers) partial-sums))))
+
+; Exercise 3.64
+(define (stream-limit stream tolerance) 
+  (let ((first (stream-car stream)) (second (stream-car (stream-cdr stream))))
+    (if (< (abs (- first second)) tolerance)
+        second
+        (stream-limit (stream-cdr stream) tolerance))))
